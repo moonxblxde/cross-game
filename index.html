@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Кроссворд 30 Уровней</title>
+    <title>Кроссворд: 20 Уровней</title>
     <style>
         body {
             background-color: #0b0f19;
@@ -20,10 +20,16 @@
             margin-bottom: 2px;
             font-size: 20px;
         }
-        .level-info {
-            color: #94a3b8;
+        .level-select {
+            margin-bottom: 8px;
+        }
+        select {
+            background: #1e293b;
+            color: white;
+            border: 1px solid #475569;
+            padding: 5px 10px;
+            border-radius: 6px;
             font-size: 14px;
-            margin-bottom: 10px;
         }
         .container {
             max-width: 400px;
@@ -31,24 +37,30 @@
         }
         .grid {
             display: grid;
-            grid-template-columns: repeat(6, 42px);
-            grid-template-rows: repeat(6, 42px);
+            grid-template-columns: repeat(6, 45px);
+            grid-template-rows: repeat(6, 45px);
             gap: 3px;
             justify-content: center;
             margin: 10px 0;
         }
+        .cell-wrapper {
+            position: relative;
+            width: 45px;
+            height: 45px;
+        }
         .cell {
-            width: 42px;
-            height: 42px;
+            width: 45px;
+            height: 45px;
             background-color: #1e293b;
             border: 2px solid #475569;
             border-radius: 6px;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             color: #fff;
             text-align: center;
             text-transform: uppercase;
             outline: none;
+            box-sizing: border-box;
         }
         .cell:focus {
             border-color: #38bdf8;
@@ -56,7 +68,16 @@
         }
         .cell.disabled {
             background-color: #05070c;
-            border-color: #0b0f19;
+            border-color: #05070c;
+            pointer-events: none;
+        }
+        .cell-number {
+            position: absolute;
+            top: 2px;
+            left: 4px;
+            font-size: 10px;
+            color: #38bdf8;
+            font-weight: bold;
             pointer-events: none;
         }
         .task-box {
@@ -68,7 +89,6 @@
             font-size: 13px;
             line-height: 1.4;
             border: 1px solid #334155;
-            min-height: 50px;
         }
         .task-box b {
             color: #38bdf8;
@@ -89,29 +109,12 @@
             cursor: pointer;
             border-radius: 6px;
         }
-        .btn:active {
-            background-color: #2563eb;
-        }
         .btn-green {
             background-color: #10b981;
-        }
-        .btn-green:active {
-            background-color: #059669;
         }
         .msg {
             margin-top: 8px;
             font-weight: bold;
-            font-size: 14px;
-        }
-        .level-select {
-            margin-bottom: 8px;
-        }
-        select {
-            background: #1e293b;
-            color: white;
-            border: 1px solid #475569;
-            padding: 5px 10px;
-            border-radius: 6px;
             font-size: 14px;
         }
     </style>
@@ -119,11 +122,10 @@
 <body>
 
     <div class="container">
-        <h1>🧠 КРОССВОРД: 30 УРОВНЕЙ by moonx</h1>
+        <h1>🧠 КРОССВОРД by moonx</h1>
         <div class="level-select">
             Уровень: <select id="levelSelect" onchange="changeLevel(this.value)"></select>
         </div>
-        <div class="level-info" id="levelInfo">Задание загружается...</div>
 
         <!-- Сетка 6x6 -->
         <div class="grid" id="grid"></div>
@@ -138,53 +140,153 @@
     </div>
 
     <script>
-        // База из 30 уровней (слова и вопросы)
+        // Четкая база из 20 уровней с координатами, номерами и вопросами
         const levels = [
-            {w1: "море", w2: "луна", w3: "зима", q1: "1. Водное пространство (4 б.)", q2: "2. Ночное светило (4 б.)", q3: "3. Холодное время года (4 б.)",
-             coords: [[0,0,"м"],[0,1,"о"],[0,2,"р"],[0,3,"е"],  [1,0,"л"],[2,0,"у"],[3,0,"н"],[4,0,"а"],  [4,1,"и"],[4,2,"м"],[4,3,"а"]]},
-            {w1: "книга", w2: "кино", w3: "ночь", q1: "1. Источник знаний (5 б.)", q2: "2. Сеанс в залах (4 б.)", q3: "3. Время суток после вечера (4 б.)",
-             coords: [[0,0,"к"],[0,1,"н"],[0,2,"и"],[0,3,"г"],[0,4,"а"],  [1,1,"и"],  [2,1,"н"],  [3,0,"н"],[3,1,"о"],[3,2,"ч"],[3,3,"ь"]]},
-            {w1: "слон", w2: "лиса", w3: "ноль", q1: "1. Крупное животное с хоботом (4 б.)", q2: "2. Хитрая рыжая плутовка (4 б.)", q3: "3. Цифра и число (4 б.)",
-             coords: [[0,0,"с"],[0,1,"л"],[0,2,"о"],[0,3,"н"],  [1,1,"и"],  [2,1,"с"],  [3,1,"а"],  [2,0,"н"],[2,1,"о"],[2,2,"л"],[2,3,"ь"]]},
-            {w1: "тигр", w2: "тест", w3: "трос", q1: "1. Полосатый хищник (4 б.)", q2: "2. Проверка знаний (4 б.)", q3: "3. Толстый канат (4 б.)",
-             coords: [[0,0,"т"],[0,1,"и"],[0,2,"г"],[0,3,"р"],  [1,1,"е"],[2,1,"с"],[3,1,"т"],  [2,0,"т"],[2,1,"р"],[2,2,"о"],[2,3,"с"]]},
-            {w1: "град", w3: "дама", q1: "1. Ледяные осадки (4 б.)", q3: "2. Женщина или карта (4 б.)",
-             coords: [[0,0,"г"],[0,1,"р"],[0,2,"а"],[0,3,"д"],  [2,2,"д"],[2,3,"а"],[3,2,"м"],[4,2,"а"]]},
-            {w1: "парк", w2: "порт", q1: "1. Место для прогулок (4 б.)", q2: "2. Стоянка кораблей (4 б.)",
-             coords: [[0,0,"п"],[0,1,"а"],[0,2,"р"],[0,3,"к"],  [1,2,"о"],[2,2,"р"],[3,2,"т"]]},
-            {w1: "торт", w2: "тема", q1: "1. Праздничный десерт (4 б.)", q2: "2. Предмет разговора (4 б.)",
-             coords: [[0,0,"т"],[0,1,"о"],[0,2,"р"],[0,3,"т"],  [1,2,"е"],[2,2,"м"],[3,2,"а"]]},
-            {w1: "шар", w2: "шум", w3: "рама", q1: "1. Круглый предмет (3 б.)", q2: "2. Громкие звуки (3 б.)", q3: "3. Основа окна или картин (4 б.)",
-             coords: [[0,0,"ш"],[0,1,"а"],[0,2,"р"],  [1,1,"у"],[2,1,"м"],  [2,0,"р"],[2,1,"а"],[2,2,"м"],[2,3,"а"]]},
-            {w1: "дым", w2: "дуб", q1: "1. От костра или сигареты (3 б.)", q2: "2. Крепкое дерево (3 б.)",
-             coords: [[0,0,"д"],[0,1,"ы"],[0,2,"м"],  [1,0,"у"],[2,0,"б"]]},
-            {w1: "лом", w2: "лет", q1: "1. Железный инструмент (3 б.)", q2: "2. Время года или полет (3 б.)",
-             coords: [[0,0,"л"],[0,1,"о"],[0,2,"м"],  [1,0,"е"],[2,0,"т"]]},
-        ];
-
-        // Добавим остальные уровни программно, чтобы их ровно 30 штук с усложнением
-        const extraWords = [
-            ["кадр", "крот"], ["мел", "мир"], ["бор", "бой"], ["ток", "танк"], ["дым", "дом"],
-            ["сила", "слог"], ["поле", "пала"], ["век", "вол"], ["град", "гость"], ["звук", "зола"],
-            ["игра", "игла"], ["колесо", "кит"], ["лак", "лупа"], ["медаль", "маг"], ["ночь", "нитка"],
-            ["окно", "оса"], ["план", "перо"], ["рука", "роза"], ["сад", "сок"], ["трон", "туча"]
-        ];
-
-        for (let i = 10; i < 30; i++) {
-            let pair = extraWords[i - 10];
-            levels.push({
-                w1: pair[0], w2: pair[1],
-                q1: `1. Слово уровня ${i+1} (часть 1)`, q2: `2. Слово уровня ${i+1} (часть 2)`,
-                coords: [
-                    [0, 0, pair[0][0]], [0, 1, pair[0][1]], [0, 2, pair[0][2]], [0, 3, pair[0][3] || "а"],
-                    [1, 0, pair[1][0]], [2, 0, pair[1][1]], [3, 0, pair[1][2]], [4, 0, pair[1][3] || "а"]
+            {
+                tasks: ["1. Горная цепь или преграда (ГОРА)", "2. Праздничный десерт (ТОРТ)"],
+                words: [
+                    {word: "гора", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "торт", r: 0, c: 2, dir: "V", num: 2}
                 ]
-            });
-        }
+            },
+            {
+                tasks: ["1. Крупное водное пространство (МОРЕ)", "2. Ночное светило (ЛУНА)"],
+                words: [
+                    {word: "море", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "луна", r: 0, c: 0, dir: "V", num: 1}
+                ]
+            },
+            {
+                tasks: ["1. Источник знаний (КНИГА)", "2. Кинотеатр или сеанс (КИНО)"],
+                words: [
+                    {word: "книга", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "кино", r: 0, c: 0, dir: "V", num: 1}
+                ]
+            },
+            {
+                tasks: ["1. Полосатый хищник (ТИГР)", "2. Проверка знаний (ТЕСТ)"],
+                words: [
+                    {word: "тигр", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "тест", r: 0, c: 0, dir: "V", num: 1}
+                ]
+            },
+            {
+                tasks: ["1. Стоянка кораблей (ПОРТ)", "2. Часть лица или органа (РОТ)"],
+                words: [
+                    {word: "порт", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "рот", r: 0, c: 2, dir: "V", num: 2}
+                ]
+            },
+            {
+                tasks: ["1. Круглый предмет (ШАР)", "2. Громкие звуки (ШУМ)"],
+                words: [
+                    {word: "шар", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "шум", r: 0, c: 0, dir: "V", num: 1}
+                ]
+            },
+            {
+                tasks: ["1. Железный инструмент (ЛОМ)", "2. Время года или полет (ЛЕТ)"],
+                words: [
+                    {word: "лом", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "лет", r: 0, c: 0, dir: "V", num: 1}
+                ]
+            },
+            {
+                tasks: ["1. От костра или сигареты (ДЫМ)", "2. Крепкое дерево (ДУБ)"],
+                words: [
+                    {word: "дым", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "дуб", r: 0, c: 0, dir: "V", num: 1}
+                ]
+            },
+            {
+                tasks: ["1. Ледяные осадки (ГРАД)", "2. Женщина или карта (ДАМА)"],
+                words: [
+                    {word: "град", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "дама", r: 0, c: 2, dir: "V", num: 2}
+                ]
+            },
+            {
+                tasks: ["1. Место для прогулок (ПАРК)", "2. Часть лица (РОТ)"],
+                words: [
+                    {word: "парк", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "рот", r: 0, c: 2, dir: "V", num: 2}
+                ]
+            },
+            {
+                tasks: ["1. Сила или мощь (СИЛА)", "2. Цифра и число (НОЛЬ)"],
+                words: [
+                    {word: "сила", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "ноль", r: 0, c: 2, dir: "V", num: 2}
+                ]
+            },
+            {
+                tasks: ["1. Поле для посевов (ПОЛЕ)", "2. Речной рак (РАК)"],
+                words: [
+                    {word: "поле", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "рак", r: 0, c: 0, dir: "V", num: 1}
+                ]
+            },
+            {
+                tasks: ["1. Столица Франции (ПАРИЖ)", "2. Отрезок времени (ВЕК)"],
+                words: [
+                    {word: "париж", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "век", r: 0, c: 2, dir: "V", num: 2}
+                ]
+            },
+            {
+                tasks: ["1. Музыкальный звук (ЗВУК)", "2. Белая масса (МЕЛ)"],
+                words: [
+                    {word: "звук", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "мел", r: 0, c: 3, dir: "V", num: 2}
+                ]
+            },
+            {
+                tasks: ["1. Детская игра (ИГРА)", "2. Швейный инструмент (ИГЛА)"],
+                words: [
+                    {word: "игра", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "игла", r: 0, c: 0, dir: "V", num: 1}
+                ]
+            },
+            {
+                tasks: ["1. Сладкий напиток (СОК)", "2. Фруктовый сад (САД)"],
+                words: [
+                    {word: "сок", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "сад", r: 0, c: 0, dir: "V", num: 1}
+                ]
+            },
+            {
+                tasks: ["1. Часть тела (РУКА)", "2. Красивый цветок (РОЗА)"],
+                words: [
+                    {word: "рука", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "роза", r: 0, c: 0, dir: "V", num: 1}
+                ]
+            },
+            {
+                tasks: ["1. Чертеж или план (ПЛАН)", "2. Птичье перо (ПЕРО)"],
+                words: [
+                    {word: "план", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "перо", r: 0, c: 0, dir: "V", num: 1}
+                ]
+            },
+            {
+                tasks: ["1. Царский трон (ТРОН)", "2. Дождевая туча (ТУЧА)"],
+                words: [
+                    {word: "трон", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "туча", r: 0, c: 0, dir: "V", num: 1}
+                ]
+            },
+            {
+                tasks: ["1. Зимняя буря (БУРЯ)", "2. Спортивный бой (БОЙ)"],
+                words: [
+                    {word: "буря", r: 0, c: 0, dir: "H", num: 1},
+                    {word: "бой", r: 0, c: 0, dir: "V", num: 1}
+                ]
+            }
+        ];
 
         let currentLevel = 0;
-
         const selectEl = document.getElementById("levelSelect");
+
         for (let i = 0; i < levels.length; i++) {
             let opt = document.createElement("option");
             opt.value = i;
@@ -200,31 +302,50 @@
 
         function loadLevel() {
             let lvl = levels[currentLevel];
-            document.getElementById("levelInfo").innerText = `Уровень ${currentLevel + 1} из ${levels.length}`;
-            document.getElementById("taskBox").innerHTML = `<b>Задания:</b><br>${lvl.q1 || "1. Основное слово"}<br>${lvl.q2 || "2. Пересечение"}<br>${lvl.q3 || ""}`;
+            document.getElementById("taskBox").innerHTML = `<b>Задания:</b><br>` + lvl.tasks.join("<br>");
             document.getElementById("msg").innerText = "";
             document.getElementById("nextBtn").style.display = "none";
 
             let grid = document.getElementById("grid");
             grid.innerHTML = "";
 
-            // Заполняем поле 6x6
-            let boardCoords = {};
-            lvl.coords.forEach(item => {
-                boardCoords[`${item[0]}-${item[1]}`] = item[2];
+            // Строим карту ответов и номеров
+            let solution = {};
+            let numbers = {};
+
+            lvl.words.forEach(item => {
+                let r = item.r;
+                let c = item.c;
+                numbers[`${r}-${c}`] = item.num;
+
+                for (let i = 0; i < item.word.length; i++) {
+                    let cr = r, cc = c;
+                    if (item.dir === "H") cc += i;
+                    else cr += i;
+                    solution[`${cr}-${cc}`] = item.word[i];
+                }
             });
 
             for (let r = 0; r < 6; r++) {
                 for (let c = 0; c < 6; c++) {
+                    let wrapper = document.createElement("div");
+                    wrapper.className = "cell-wrapper";
+
                     let input = document.createElement("input");
                     input.className = "cell";
                     input.maxLength = 1;
                     input.dataset.r = r;
                     input.dataset.c = c;
-                    
+
                     let key = `${r}-${c}`;
-                    if (boardCoords[key]) {
-                        input.dataset.answer = boardCoords[key];
+                    if (solution[key]) {
+                        input.dataset.answer = solution[key];
+                        if (numbers[key]) {
+                            let numSpan = document.createElement("span");
+                            numSpan.className = "cell-number";
+                            numSpan.innerText = numbers[key];
+                            wrapper.appendChild(numSpan);
+                        }
                     } else {
                         input.classList.add("disabled");
                     }
@@ -232,12 +353,14 @@
                     input.addEventListener("input", (e) => {
                         let val = e.target.value.toLowerCase();
                         e.target.value = val;
-                        if (val && e.target.nextElementSibling && !e.target.nextElementSibling.classList.contains("disabled")) {
-                            e.target.nextElementSibling.focus();
+                        if (val && e.target.parentElement.nextElementSibling) {
+                            let nextInput = e.target.parentElement.nextElementSibling.querySelector(".cell:not(.disabled)");
+                            if (nextInput) nextInput.focus();
                         }
                     });
 
-                    grid.appendChild(input);
+                    wrapper.appendChild(input);
+                    grid.appendChild(wrapper);
                 }
             }
         }
@@ -259,7 +382,7 @@
             let msg = document.getElementById("msg");
             if (correct) {
                 msg.style.color = "#10b981";
-                msg.innerText = "🎉 Уровень пройден!";
+                msg.innerText = "🎉 Красава! Всё верно!";
                 if (currentLevel < levels.length - 1) {
                     document.getElementById("nextBtn").style.display = "inline-block";
                 }
