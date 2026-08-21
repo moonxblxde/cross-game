@@ -7,15 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #090d16;
-            --surface: #131c2e;
-            --surface-card: #19263f;
+            --bg: #07090e;
+            --surface: #111827;
+            --surface-card: #1f2937;
             --primary: #6366f1;
             --primary-hover: #4f46e5;
-            --accent: #06b6d4;
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #2a3b5c;
+            --accent: #38bdf8;
+            --text: #f9fafb;
+            --text-muted: #9ca3af;
+            --border: #374151;
             --success: #10b981;
             --error: #f43f5e;
         }
@@ -34,18 +34,18 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px 10px;
+            padding: 16px;
         }
 
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         header h1 {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
-            background: linear-gradient(135deg, #818cf8, #06b6d4);
+            background: linear-gradient(135deg, #818cf8, #38bdf8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -53,7 +53,7 @@
         header p {
             font-size: 13px;
             color: var(--text-muted);
-            margin-top: 4px;
+            margin-top: 2px;
         }
 
         /* Выбор уровней */
@@ -61,10 +61,10 @@
             display: flex;
             gap: 8px;
             overflow-x: auto;
-            max-width: 600px;
+            max-width: 500px;
             width: 100%;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
             scrollbar-width: none;
         }
         .levels-container::-webkit-scrollbar {
@@ -75,18 +75,13 @@
             background: var(--surface);
             border: 1px solid var(--border);
             color: var(--text-muted);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             white-space: nowrap;
-            transition: all 0.2s ease;
-        }
-
-        .level-chip:hover {
-            border-color: var(--primary);
-            color: var(--text);
+            transition: all 0.2s;
         }
 
         .level-chip.active {
@@ -100,34 +95,34 @@
         .game-wrapper {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 20px;
-            max-width: 550px;
+            border-radius: 16px;
+            padding: 16px;
+            max-width: 420px;
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            gap: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .grid-box {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            grid-template-rows: repeat(6, 1fr);
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr);
             aspect-ratio: 1;
-            gap: 4px;
+            gap: 3px;
             background: var(--border);
-            padding: 4px;
-            border-radius: 12px;
-            max-width: 360px;
+            padding: 3px;
+            border-radius: 10px;
+            max-width: 320px;
             margin: 0 auto;
             width: 100%;
         }
 
         .cell {
             position: relative;
-            background: #060913;
-            border-radius: 6px;
+            background: #030712;
+            border-radius: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -135,7 +130,7 @@
 
         .cell.empty {
             background: var(--surface);
-            opacity: 0.15;
+            opacity: 0.1;
             pointer-events: none;
         }
 
@@ -145,7 +140,7 @@
             background: transparent;
             border: none;
             color: white;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             text-align: center;
             text-transform: uppercase;
@@ -154,14 +149,13 @@
 
         .cell input:focus {
             background: rgba(99, 102, 241, 0.2);
-            border-radius: 6px;
         }
 
         .cell-num {
             position: absolute;
-            top: 3px;
-            left: 4px;
-            font-size: 9px;
+            top: 2px;
+            left: 3px;
+            font-size: 8px;
             font-weight: 700;
             color: var(--accent);
             pointer-events: none;
@@ -171,11 +165,11 @@
         .clues-section {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .clues-section h3 {
-            font-size: 13px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: var(--accent);
@@ -186,16 +180,16 @@
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
         }
 
         .clues-list li {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
             background: var(--surface-card);
-            padding: 8px 12px;
-            border-radius: 8px;
-            border-left: 3px solid var(--primary);
+            padding: 6px 10px;
+            border-radius: 6px;
+            border-left: 2px solid var(--primary);
         }
 
         .clues-list li b {
@@ -205,59 +199,41 @@
         /* Кнопки */
         .actions {
             display: flex;
-            gap: 10px;
-            margin-top: 5px;
+            gap: 8px;
         }
 
         .btn {
             flex: 1;
-            padding: 12px;
-            border-radius: 12px;
+            padding: 10px;
+            border-radius: 10px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             border: none;
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-        .btn-primary:hover {
-            background: var(--primary-hover);
-        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
 
-        .btn-secondary {
-            background: var(--surface-card);
-            color: var(--text-muted);
-            border: 1px solid var(--border);
-        }
-        .btn-secondary:hover {
-            color: var(--text);
-            border-color: var(--text-muted);
-        }
+        .btn-secondary { background: var(--surface-card); color: var(--text-muted); border: 1px solid var(--border); }
+        .btn-secondary:hover { color: var(--text); }
 
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
+        .btn-success { background: var(--success); color: white; }
 
         #status-msg {
             text-align: center;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            min-height: 20px;
-            margin-top: 10px;
+            min-height: 18px;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1> crossword by moonx </h1>
-        <p>Уровень <span id="current-lvl-num">1</span> из 15</p>
+        <h1>Кроссворд</h1>
+        <p>Уровень <span id="current-lvl-num">1</span> из 5</p>
     </header>
 
     <div class="levels-container" id="levels-bar"></div>
@@ -285,14 +261,13 @@
     </div>
 
     <script>
-        // Четкая база данных с заранее просчитанными пересечениями без багов
+        // Четкая сетка 5х5 с жестким пересечением букв
         const levelsData = [
             {
-                // Уровень 1: КНИГА / СТОЛ / КЛАСС / АТЛАС
-                // Сетка 6х6
+                size: 5,
                 h: [
                     { id: 1, text: "Печатное издание с текстом.", row: 0, col: 0, word: "КНИГА" },
-                    { id: 2, text: "Предмет мебели для работы.", row: 3, col: 1, word: "СТОЛ" }
+                    { id: 2, text: "Предмет мебели для работы.", row: 4, col: 0, word: "СТОЛ" }
                 ],
                 v: [
                     { id: 3, text: "Школьное помещение для уроков.", row: 0, col: 0, word: "КЛАСС" },
@@ -300,102 +275,47 @@
                 ]
             },
             {
-                // Уровень 2
+                size: 5,
                 h: [
                     { id: 1, text: "Самое холодное время года.", row: 0, col: 0, word: "ЗИМА" },
-                    { id: 2, text: "Замерзшая вода.", row: 3, col: 1, word: "ЛЕД" }
+                    { id: 2, text: "Замерзшая вода.", row: 4, col: 0, word: "ЛЕД" }
                 ],
                 v: [
-                    { id: 3, text: "Гладкая отражающая поверхность.", row: 0, col: 0, word: "ЗЕРКАЛО" },
+                    { id: 3, text: "Гладкая отражающая поверхность.", row: 0, col: 0, word: "ЗЕРКАЛО".slice(0,5) },
                     { id: 4, text: "Легковой автомобиль.", row: 0, col: 3, word: "АВТО" }
                 ]
             },
             {
-                // Уровень 3
-                h: [
-                    { id: 1, text: "Самое теплое время года.", row: 0, col: 0, word: "ЛЕТО" },
-                    { id: 2, text: "Сильный зной в полдень.", row: 3, col: 1, word: "ЖАРА" }
-                ],
-                v: [
-                    { id: 3, text: "Поле с сочной травой.", row: 0, col: 0, word: "ЛУГ" },
-                    { id: 4, text: "Зеленый покров земли.", row: 0, col: 3, word: "ТРАВА" }
-                ]
-            },
-            {
-                // Уровень 4
+                size: 5,
                 h: [
                     { id: 1, text: "Естественный водный поток.", row: 0, col: 0, word: "РЕКА" },
-                    { id: 2, text: "Сооружение через преграду.", row: 3, col: 1, word: "МОСТ" }
+                    { id: 2, text: "Сооружение через реку.", row: 4, col: 0, word: "МОСТ" }
                 ],
                 v: [
                     { id: 3, text: "Животное в воде с жабрами.", row: 0, col: 0, word: "РЫБА" },
-                    { id: 4, text: "Канал для отвода воды.", row: 0, col: 3, word: "ТРУБА" }
+                    { id: 4, text: "Водная глубокая артерия.", row: 0, col: 3, word: "КАНАЛ" }
                 ]
             },
             {
-                // Уровень 5
-                h: [
-                    { id: 1, text: "Равнина под посев.", row: 0, col: 0, word: "ПОЛЕ" },
-                    { id: 2, text: "Зерновая хлебная культура.", row: 3, col: 1, word: "РОЖЬ" }
-                ],
-                v: [
-                    { id: 3, text: "Пернатое с крыльями.", row: 0, col: 0, word: "ПТИЦА" },
-                    { id: 4, text: "Музыкальный театр.", row: 0, col: 3, word: "ОПЕРА" }
-                ]
-            },
-            {
-                // Уровень 6
-                h: [
-                    { id: 1, text: "Искусство киноэкрана.", row: 0, col: 0, word: "КИНО" },
-                    { id: 2, text: "Театральный жанр.", row: 3, col: 1, word: "ДРАМ" }
-                ],
-                v: [
-                    { id: 3, text: "Защитный шлем.", row: 0, col: 0, word: "КАСКА" },
-                    { id: 4, text: "Художественный тип.", row: 0, col: 3, word: "ОБРАЗ" }
-                ]
-            },
-            {
-                // Уровень 7
+                size: 5,
                 h: [
                     { id: 1, text: "Управляет самолетом.", row: 0, col: 0, word: "ПИЛОТ" },
-                    { id: 2, text: "Орган управления.", row: 3, col: 1, word: "РУЛЬ" }
+                    { id: 2, text: "Орган управления на судне.", row: 4, col: 1, word: "РУЛЬ" }
                 ],
                 v: [
-                    { id: 3, text: "Мелкие сыпучие крупинки.", row: 0, col: 0, word: "ПЕСОК" },
+                    { id: 3, text: "Мелкие сыпучие крупинки пляжа.", row: 0, col: 0, word: "ПЕСОК" },
                     { id: 4, text: "Машина с шашечками.", row: 0, col: 4, word: "ТАКСИ" }
                 ]
             },
             {
-                // Уровень 8
+                size: 5,
                 h: [
-                    { id: 1, text: "Ученический стол.", row: 0, col: 0, word: "ПАРТА" },
-                    { id: 2, text: "Брусок для доски.", row: 3, col: 1, word: "МЕЛ" }
+                    { id: 1, text: "Ученический рабочий стол.", row: 0, col: 0, word: "ПАРТА" },
+                    { id: 2, text: "Белый брусок для доски.", row: 4, col: 1, word: "МЕЛ" }
                 ],
                 v: [
-                    { id: 3, text: "Воинская часть.", row: 0, col: 0, word: "ПОЛК" },
-                    { id: 4, text: "Дорожка с деревьями.", row: 0, col: 4, word: "АЛЛЕЯ" }
-                ]
-            },
-            {
-                // Уровень 9
-                h: [
-                    { id: 1, text: "Оттенок, краска.", row: 0, col: 0, word: "ЦВЕТ" },
-                    { id: 2, text: "Королева цветов.", row: 3, col: 1, word: "РОЗА" }
-                ],
-                v: [
-                    { id: 3, text: "Сосуд для букета.", row: 0, col: 0, word: "ВАЗА" },
-                    { id: 4, text: "Главное место.", row: 0, col: 4, word: "ЦЕНТР" }
-                ]
-            },
-            {
-                // Уровень 10
-                h: [
-                    { id: 1, text: "Умный сообразительный человек.", row: 0, col: 0, word: "УМНИК" },
-                    { id: 2, text: "Источник знаний.", row: 3, col: 1, word: "КНИГА" }
-                ],
-                v: [
-                    { id: 3, text: "Черное горное топливо.", row: 0, col: 0, word: "УГОЛЬ" },
-                    { id: 4, text: "Быстроходное суднышко.", row: 0, col: 4, word: "КАТЕР" }
+                    { id: 3, text: "Воинская крупная часть.", row: 0, col: 0, word: "ПОЛК" },
+                    { id: 4, text: "Дорожка с рядами деревьев.", row: 0, col: 4, word: "АЛЛЕЯ" }
                 ]
             }
         ];
@@ -409,7 +329,7 @@
             levelsData.forEach((_, idx) => {
                 let chip = document.createElement('div');
                 chip.className = `level-chip ${idx === activeLevel ? 'active' : ''}`;
-                chip.innerText = `Уровень ${idx + 1}`;
+                chip.innerText = `Ур. ${idx + 1}`;
                 chip.onclick = () => loadLevel(idx);
                 bar.appendChild(chip);
             });
@@ -426,19 +346,20 @@
         }
 
         function buildMatrix(data) {
-            // Создаем пустую матрицу 6x6
-            gridMatrix = Array(6).fill(null).map(() => Array(6).fill(null));
+            gridMatrix = Array(5).fill(null).map(() => Array(5).fill(null));
 
             // Заполняем горизонтальные слова
             data.h.forEach(item => {
                 for (let i = 0; i < item.word.length; i++) {
                     let r = item.row;
                     let c = item.col + i;
-                    if (!gridMatrix[r][c]) {
-                        gridMatrix[r][c] = { letter: item.word[i], num: (i === 0 ? item.id : null) };
-                    } else {
-                        if (i === 0) gridMatrix[r][c].num = item.id;
-                        gridMatrix[r][c].letter = item.word[i];
+                    if (r < 5 && c < 5) {
+                        if (!gridMatrix[r][c]) {
+                            gridMatrix[r][c] = { letter: item.word[i], num: (i === 0 ? item.id : null) };
+                        } else {
+                            if (i === 0) gridMatrix[r][c].num = item.id;
+                            gridMatrix[r][c].letter = item.word[i];
+                        }
                     }
                 }
             });
@@ -448,11 +369,13 @@
                 for (let i = 0; i < item.word.length; i++) {
                     let r = item.row + i;
                     let c = item.col;
-                    if (!gridMatrix[r][c]) {
-                        gridMatrix[r][c] = { letter: item.word[i], num: (i === 0 ? item.id : null) };
-                    } else {
-                        if (i === 0) gridMatrix[r][c].num = item.id;
-                        gridMatrix[r][c].letter = item.word[i];
+                    if (r < 5 && c < 5) {
+                        if (!gridMatrix[r][c]) {
+                            gridMatrix[r][c] = { letter: item.word[i], num: (i === 0 ? item.id : null) };
+                        } else {
+                            if (i === 0) gridMatrix[r][c].num = item.id;
+                            gridMatrix[r][c].letter = item.word[i];
+                        }
                     }
                 }
             });
@@ -462,8 +385,8 @@
             const gridEl = document.getElementById('crossword-grid');
             gridEl.innerHTML = '';
 
-            for (let r = 0; r < 6; r++) {
-                for (let c = 0; c < 6; c++) {
+            for (let r = 0; r < 5; r++) {
+                for (let c = 0; c < 5; c++) {
                     let cellData = gridMatrix[r][c];
                     let cellDiv = document.createElement('div');
                     cellDiv.className = 'cell';
@@ -483,7 +406,6 @@
                         input.dataset.r = r;
                         input.dataset.c = c;
 
-                        // Автоматический переход к следующей ячейке
                         input.addEventListener('input', (e) => {
                             if (e.target.value.length === 1) {
                                 let nextInput = gridEl.querySelector(`input[data-r="${r}"][data-c="${c+1}"]`) ||
@@ -498,7 +420,6 @@
                 }
             }
 
-            // Заполняем подсказки
             const curData = levelsData[activeLevel];
             document.getElementById('horizontal-clues').innerHTML = curData.h.map(i => `<li><b>${i.id}.</b> ${i.text}</li>`).join('');
             document.getElementById('vertical-clues').innerHTML = curData.v.map(i => `<li><b>${i.id}.</b> ${i.text}</li>`).join('');
@@ -531,16 +452,16 @@
             let msg = document.getElementById('status-msg');
             if (filledCount === 0) {
                 msg.style.color = '#f59e0b';
-                msg.innerText = 'Заполните пустые клетки!';
+                msg.innerText = 'Заполните клетки!';
             } else if (allCorrect) {
                 msg.style.color = 'var(--success)';
-                msg.innerText = 'Отлично! Уровень успешно пройден!';
+                msg.innerText = 'Кроссворд решен верно!';
                 if (activeLevel < levelsData.length - 1) {
                     document.getElementById('next-btn').style.display = 'block';
                 }
             } else {
                 msg.style.color = 'var(--error)';
-                msg.innerText = 'Есть ошибки, проверьте буквы.';
+                msg.innerText = 'Есть ошибки в буквах.';
             }
         }
 
@@ -559,7 +480,6 @@
             }
         }
 
-        // Запуск
         loadLevel(0);
     </script>
 </body>
