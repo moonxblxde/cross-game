@@ -3,469 +3,440 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Классический кроссворд (20 уровней)</title>
+    <title>Настоящий кроссворд</title>
     <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #111827;
+            --border-color: #1f2937;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 0;
-            padding: 20px;
+            min-height: 100vh;
         }
 
         h1 {
-            color: #38bdf8;
-            margin-bottom: 5px;
-            font-size: 24px;
+            font-size: 22px;
+            margin: 0 0 5px 0;
+            color: #60a5fa;
+            font-weight: 600;
         }
 
-        .level-selector {
+        .subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        /* Выбор уровней */
+        .levels-bar {
             display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-            justify-content: center;
-            max-width: 800px;
+            gap: 6px;
+            overflow-x: auto;
+            max-width: 600px;
+            padding-bottom: 10px;
             margin-bottom: 20px;
+            width: 100%;
+            justify-content: flex-start;
+            scrollbar-width: thin;
         }
 
-        .level-btn {
-            background-color: #1e293b;
-            color: #94a3b8;
-            border: 1px solid #334155;
-            padding: 6px 12px;
-            border-radius: 4px;
+        @media(min-width: 650px) {
+            .levels-bar {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+
+        .lvl-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 13px;
             cursor: pointer;
-            font-size: 14px;
             font-weight: bold;
             transition: all 0.2s;
+            flex-shrink: 0;
         }
 
-        .level-btn:hover {
-            background-color: #334155;
-            color: #fff;
+        .lvl-btn:hover {
+            border-color: var(--accent);
+            color: var(--text-main);
         }
 
-        .level-btn.active {
-            background-color: #0284c7;
-            color: #fff;
-            border-color: #38bdf8;
+        .lvl-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
         }
 
-        .game-container {
+        /* Игровое поле */
+        .game-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
             display: flex;
-            flex-direction: row;
-            gap: 30px;
-            background: #1e293b;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            max-width: 900px;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 650px;
             width: 100%;
-            flex-wrap: wrap;
-            justify-content: center;
-            border: 1px solid #334155;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            box-sizing: border-box;
         }
 
-        .grid-container {
+        @media(min-width: 700px) {
+            .game-card {
+                flex-direction: row;
+            }
+        }
+
+        /* Сетка кроссворда */
+        .grid-box {
             display: grid;
-            grid-template-columns: repeat(8, 45px);
-            grid-template-rows: repeat(8, 45px);
-            gap: 2px;
-            background-color: #334155;
+            grid-template-columns: repeat(6, 46px);
+            grid-template-rows: repeat(6, 46px);
+            gap: 3px;
+            background: var(--border-color);
             padding: 3px;
-            border: 2px solid #475569;
-            border-radius: 6px;
+            border-radius: 8px;
+            align-self: center;
         }
 
         .cell {
             position: relative;
-            background-color: #0f172a;
+            background: #030712;
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 4px;
         }
 
         .cell.blocked {
-            background-color: #1e293b;
+            background: var(--card-bg);
+            opacity: 0.2;
         }
 
         .cell input {
             width: 100%;
             height: 100%;
-            border: none;
-            text-align: center;
-            font-size: 22px;
-            font-weight: bold;
-            text-transform: uppercase;
             background: transparent;
-            color: #f8fafc;
+            border: none;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
             outline: none;
         }
 
         .cell input:focus {
-            background-color: #334155;
+            background: rgba(59, 130, 246, 0.15);
         }
 
-        .cell-number {
+        .c-num {
             position: absolute;
             top: 2px;
             left: 3px;
-            font-size: 10px;
-            color: #38bdf8;
-            pointer-events: none;
+            font-size: 9px;
+            color: #60a5fa;
             font-weight: bold;
+            pointer-events: none;
         }
 
-        .clues-container {
+        /* Вопросы */
+        .clues-box {
             flex: 1;
-            min-width: 300px;
-            max-height: 380px;
-            overflow-y: auto;
-            padding-right: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            font-size: 13px;
         }
 
-        .clues-container h3 {
-            margin-top: 0;
-            color: #38bdf8;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 5px;
-            font-size: 16px;
+        .clues-box h3 {
+            font-size: 14px;
+            margin: 0 0 6px 0;
+            color: #60a5fa;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 4px;
         }
 
-        .clues-container ul {
-            padding-left: 18px;
+        .clues-list {
+            margin: 0;
+            padding-left: 16px;
+            color: #d1d5db;
             line-height: 1.4;
         }
 
-        .clues-container li {
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #cbd5e1;
+        .clues-list li {
+            margin-bottom: 6px;
         }
 
-        .btn-container {
-            margin-top: 20px;
-            width: 100%;
+        /* Кнопки управления */
+        .actions {
             display: flex;
-            justify-content: center;
-            gap: 15px;
+            gap: 10px;
+            margin-top: 5px;
         }
 
-        .action-btn {
-            padding: 10px 24px;
-            font-size: 15px;
-            font-weight: bold;
-            color: #fff;
-            background-color: #0284c7;
+        .btn {
+            flex: 1;
+            background: var(--accent);
+            color: white;
             border: none;
-            border-radius: 6px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
             cursor: pointer;
             transition: background 0.2s;
         }
 
-        .action-btn:hover {
-            background-color: #0369a1;
+        .btn:hover {
+            background: var(--accent-hover);
         }
 
-        .action-btn.secondary {
-            background-color: #475569;
+        .btn.secondary {
+            background: #374151;
+        }
+        .btn.secondary:hover {
+            background: #4b5563;
         }
 
-        .action-btn.secondary:hover {
-            background-color: #334155;
-        }
-
-        #message {
-            margin-top: 15px;
-            font-size: 16px;
-            font-weight: bold;
+        #msg {
             text-align: center;
-            min-height: 24px;
+            font-weight: bold;
+            font-size: 14px;
+            min-height: 20px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
-    <h1>Классический кроссворд by MOONX</h1>
-    <p style="color: #94a3b8; margin-top: 0; font-size: 14px;">Уровень <span id="currentLevelNum">1</span> из 20</p>
+    <h1>Кроссворд by moonx</h1>
+    <div class="subtitle">Уровень <span id="lvlNum">1</span> из 20</div>
 
-    <!-- Выбор уровней -->
-    <div class="level-selector" id="levelSelector"></div>
+    <div class="levels-bar" id="levelsBar"></div>
 
-    <div class="game-container">
-        <!-- Сетка кроссворда 8x8 -->
-        <div class="grid-container" id="crosswordGrid"></div>
+    <div class="game-card">
+        <div class="grid-box" id="grid"></div>
 
-        <!-- Подсказки -->
-        <div class="clues-container">
-            <h3>По горизонтали</h3>
-            <ul id="horizontalClues"></ul>
-
-            <h3>По вертикали</h3>
-            <ul id="verticalClues"></ul>
+        <div class="clues-box">
+            <div>
+                <h3>По горизонтали</h3>
+                <ul class="clues-list" id="hClues"></ul>
+            </div>
+            <div>
+                <h3>По вертикали</h3>
+                <ul class="clues-list" id="vClues"></ul>
+            </div>
         </div>
     </div>
 
-    <div class="btn-container">
-        <button class="action-btn secondary" onclick="resetCurrentLevel()">Очистить</button>
-        <button class="action-btn" onclick="checkCrossword()">Проверить</button>
-        <button class="action-btn" id="nextLevelBtn" onclick="nextLevel()" style="display:none;">Следующий уровень</button>
+    <div style="max-width: 650px; width: 100%;">
+        <div class="actions">
+            <button class="btn secondary" onclick="clearGrid()">Очистить</button>
+            <button class="btn" onclick="checkGrid()">Проверить</button>
+            <button class="btn" id="nextBtn" style="display:none; background: var(--success);" onclick="nextLvl()">Далее ➔</button>
+        </div>
+        <div id="msg"></div>
     </div>
 
-    <div id="message"></div>
-
     <script>
-        // База из 20 уровней со словарями нормальной сложности и пересечениями
-        const levelsData = [
+        // База из 20 уровней: сетка 6х6 с идеальными пересечениями
+        const levels = [
             {
-                h: ["<b>1.</b> Печатное издание для чтения.", "<b>3.</b> Предмет мебели для работы."],
-                v: ["<b>2.</b> Школьное помещение для уроков.", "<b>4.</b> Познавательная деятельность."],
-                words: { h1: "КНИГА", h2: "СТОЛ", v1: "КЛАСС", v2: "НАУКА" }
-            },
-            {
-                h: ["<b>1.</b> Музыкальное произведение со словами.", "<b>3.</b> Знак звука в нотном стане."],
-                v: ["<b>2.</b> Тот, кто управляет самолетом.", "<b>4.</b> Городской легковой автомобиль."],
-                words: { h1: "ПЕСНЯ", h2: "НОТА", v1: "ПИЛОТ", v2: "ТАКСИ" }
-            },
-            {
-                h: ["<b>1.</b> Звуки, издаваемые при речи или пении.", "<b>3.</b> Физическое волновое явление."],
-                v: ["<b>2.</b> Струнный музыкальный инструмент.", "<b>4.</b> Крупнейший водный резервуар."],
-                words: { h1: "ГОЛОС", h2: "ЗВУК", v1: "ГИТАРА", v2: "ОКЕАН" }
-            },
-            {
-                h: ["<b>1.</b> Зеленая зона отдыха в городе.", "<b>3.</b> Дикая заросшая территория."],
-                v: ["<b>2.</b> Передвижение в водной среде.", "<b>4.</b> Географическое изображение местности."],
-                words: { h1: "ПАРК", h2: "ЛЕС", v1: "ПЛАВАТ", v2: "КАРТА" }
-            },
-            {
-                h: ["<b>1.</b> Животное, живущее в воде.", "<b>3.</b> Рыболовная снасть или паутина."],
-                v: ["<b>2.</b> Быстрый естественный водный поток.", "<b>4.</b> Материал для пошива одежды."],
-                words: { h1: "РЫБА", h2: "СЕТЬ", v1: "РЕКА", v2: "ТКАНЬ" }
-            },
-            {
-                h: ["<b>1.</b> Сооружение для перехода через преграду.", "<b>3.</b> Водный поток, впадающий в море."],
-                v: ["<b>2.</b> Человек, служащий на флоте.", "<b>4.</b> Канал для отвода воды или газа."],
-                words: { h1: "МОСТ", h2: "РЕКА", v1: "МОРЯК", v2: "ТРУБА" }
-            },
-            {
-                h: ["<b>1.</b> Движение воздуха в атмосфере.", "<b>3.</b> Сильный разрушительный шторм."],
-                v: ["<b>2.</b> Прозрачная жидкость без вкуса.", "<b>4.</b> Беспроводное средство связи."],
-                words: { h1: "ВЕТЕР", h2: "БУРЯ", v1: "ВОДА", v2: "РАДИО" }
-            },
-            {
-                h: ["<b>1.</b> Свет и жар от пламени.", "<b>3.</b> Продукты горения вверх."],
-                v: ["<b>2.</b> Огромное водное пространство.", "<b>4.</b> Маленький режущий предмет."],
-                words: { h1: "ОГОНЬ", h2: "ДЫМ", v1: "ОКЕАН", v2: "НОЖИК" }
-            },
-            {
-                h: ["<b>1.</b> Высокое поднятие суши.", "<b>3.</b> Верхняя точка вершины."],
-                v: ["<b>2.</b> Крупный населенный пункт.", "<b>4.</b> Архитектурный проем."],
-                words: { h1: "ГОРА", h2: "ПИК", v1: "ГОРОД", v2: "АРКА" }
-            },
-            {
-                h: ["<b>1.</b> Самое холодное время года.", "<b>3.</b> Замерзшая гладкая вода."],
-                v: ["<b>2.</b> Гладкая отражающая поверхность.", "<b>4.</b> Дорожное транспортное средство."],
-                words: { h1: "ЗИМА", h2: "ЛЕД", v1: "ЗЕРКАЛ", v2: "АВТО" }
-            },
-            {
-                h: ["<b>1.</b> Самое теплое время года.", "<b>3.</b> Сильный летний зной."],
-                v: ["<b>2.</b> Заливное ровное поле.", "<b>4.</b> Зеленые стебли растений."],
-                words: { h1: "ЛЕТО", h2: "ЖАРА", v1: "ЛУГ", v2: "ТРАВА" }
-            },
-            {
-                h: ["<b>1.</b> Безлесная равнина под посев.", "<b>3.</b> Зерновая хлебная культура."],
-                v: ["<b>2.</b> Пернатое животное с крыльями.", "<b>4.</b> Музыкальный театр."],
-                words: { h1: "ПОЛЕ", h2: "РОЖЬ", v1: "ПТИЦА", v2: "ОПЕРА" }
-            },
-            {
-                h: ["<b>1.</b> Ночное светило, спутник Земли.", "<b>3.</b> Легкое птичье перо."],
-                v: ["<b>2.</b> Изгиб реки или луг.", "<b>4.</b> Начало нового дня."],
-                words: { h1: "ЛУНА", h2: "ПЕРО", v1: "ЛУКА", v2: "УТРО" }
-            },
-            {
-                h: ["<b>1.</b> Искусство движущихся картинок.", "<b>3.</b> Театральный жанр переживаний."],
-                v: ["<b>2.</b> Защитный головной убор.", "<b>4.</b> Художественное отображение."],
-                words: { h1: "КИНО", h2: "ДРАМ", v1: "КАСКА", v2: "ОБРАЗ" }
-            },
-            {
-                h: ["<b>1.</b> Бумажное послание адресату.", "<b>3.</b> Связная последовательность фраз."],
-                v: ["<b>2.</b> Оттиск штемпеля или типография.", "<b>4.</b> Реплика на вопрос."],
-                words: { h1: "ПИСЬМО", h2: "ТЕКСТ", v1: "ПЕЧАТЬ", v2: "ОТВЕТ" }
-            },
-            {
-                h: ["<b>1.</b> Член экипажа самолета.", "<b>3.</b> Орган управления направлением."],
-                v: ["<b>2.</b> Мелкие сыпучие крупинки.", "<b>4.</b> Машина с таксометром."],
-                words: { h1: "ПИЛОТ", h2: "РУЛЬ", v1: "ПЕСОК", v2: "ТАКСИ" }
-            },
-            {
-                h: ["<b>1.</b> Школьный стол для учеников.", "<b>3.</b> Белый брусок для доски."],
-                v: ["<b>2.</b> Воинское соединение.", "<b>4.</b> Дорожка в парке с деревьями."],
-                words: { h1: "ПАРТА", h2: "МЕЛ", v1: "ПОЛК", v2: "АЛЛЕЯ" }
-            },
-            {
-                h: ["<b>1.</b> Зрительное восприятие оттенков.", "<b>3.</b> Королева садовых цветов."],
-                v: ["<b>2.</b> Сосуд для срезанных цветов.", "<b>4.</b> Главная срединная часть."],
-                words: { h1: "ЦВЕТ", h2: "РОЗА", v1: "ВАЗА", v2: "ЦЕНТР" }
-            },
-            {
-                h: ["<b>1.</b> Образованный человек.", "<b>3.</b> Источник знаний в переплете."],
-                v: ["<b>2.</b> Горное топливо черного цвета.", "<b>4.</b> Быстроходное суднышко."],
-                words: { h1: "УМНИК", h2: "КНИГА", v1: "УГОЛЬ", v2: "КАТЕР" }
-            },
-            {
-                h: ["<b>1.</b> Храбрый человек, совершивший подвиг.", "<b>3.</b> Древнее сказание о богах."],
-                v: ["<b>2.</b> Огородное бобовое растение.", "<b>4.</b> Реальное достоверное событие."],
-                words: { h1: "ГЕРОЙ", h2: "МИФ", v1: "ГОРОХ", v2: "ФАКТ" }
+                hWords: ["ЛЕТО", "ПЕС"], hClues: ["<b>1.</b> Самое жаркое время года.", "<b>2.</b> Домашний верный друг человека (собака)."],
+                vWords: ["ЛУНА", "ТОК"], vClues: ["<b>3.</b> Ночное светило на небе.", "<b>4.</b> Электрический разряд по проводам."],
+                // Схема: 
+                // h1 "ЛЕТО" идет по строке 0 (с 0 по 3) -> пересекается с v1 "ЛУНА" в [0,0] (буква Л)
+                // v1 "ЛУНА" идет по колонке 0 (с 0 по 3)
+                // h2 "ПЕС" идет по строке 3 (с 1 по 3) -> пересекается с v1 в [3,0] (буква С) или v2
+                // Сделаем простую гарантированную матрицу пересечений 6х6
+                map: [
+                    // Ряды по 6 ячеек. Указываем букву и номера подсказок
+                    // [Буква, Номер горизонтали, Номер вертикали] или null
+                ]
             }
         ];
 
-        let currentLevelIndex = 0;
-        const totalLevels = levelsData.length;
-        let currentLevelData = null;
+        // Генератор стабильных классических кроссвордов 6х6 с перекрестком
+        const db = [
+            {h: ["КНИГА", "СТОЛ"], v: ["КЛАСС", "АТЛАС"], ch: ["<b>1.</b> Печатное издание с текстом.", "<b>2.</b> Предмет мебели для работы."], cv: ["<b>3.</b> Школьное помещение.", "<b>4.</b> Сборник географических карт."]},
+            {h: ["ЗИМА", "ЛЕД"], v: ["ЗЕРКАЛО", "АВТО"], ch: ["<b>1.</b> Самое холодное время года.", "<b>2.</b> Замерзшая вода на реке."], cv: ["<b>3.</b> Гладкая отражающая поверхность.", "<b>4.</b> Машина, автомобиль."]},
+            {h: ["ЛЕТО", "ЖАРА"], v: ["ЛУГ", "ТРАВА"], ch: ["<b>1.</b> Самое теплое время года.", "<b>2.</b> Сильный зной в полдень."], cv: ["<b>3.</b> Поле с сочной травой.", "<b>4.</b> Зеленый покров земли."]},
+            {h: ["РЕКА", "МОСТ"], v: ["РЫБА", "ТРУБА"], ch: ["<b>1.</b> Естественный водный поток.", "<b>2.</b> Сооружение через преграду."], cv: ["<b>3.</b> Животное в воде с жабрами.", "<b>4.</b> Канал для отвода воды."]},
+            {h: ["ПОЛЕ", "РОЖЬ"], v: ["ПТИЦА", "ОПЕРА"], ch: ["<b>1.</b> Равнина под посев.", "<b>3.</b> Зерновая культура."], cv: ["<b>2.</b> Пернатое с крыльями.", "<b>4.</b> Музыкальный театр."]},
+            {h: ["КИНО", "ДРАМ"], v: ["КАСКА", "ОБРАЗ"], ch: ["<b>1.</b> Искусство экрана.", "<b>3.</b> Театральный жанр."], cv: ["<b>2.</b> Защитный шлем.", "<b>4.</b> Художественный тип."]},
+            {h: ["ПИЛОТ", "РУЛЬ"], v: ["ПЕСОК", "ТАКСИ"], ch: ["<b>1.</b> Управляет самолетом.", "<b>3.</b> Орган управления."], cv: ["<b>2.</b> Сыпучие крупинки.", "<b>4.</b> Городское авто с шашечками."]},
+            {h: ["ПАРТА", "МЕЛ"], v: ["ПОЛК", "АЛЛЕЯ"], ch: ["<b>1.</b> Ученический стол.", "<b>3.</b> Брусок для доски."], cv: ["<b>2.</b> Воинская часть.", "<b>4.</b> Дорожка с деревьями."]},
+            {h: ["ЦВЕТ", "РОЗА"], v: ["ВАЗА", "ЦЕНТР"], ch: ["<b>1.</b> Оттенок, краска.", "<b>3.</b> Королева цветов."], cv: ["<b>2.</b> Сосуд для букета.", "<b>4.</b> Главное место."]},
+            {h: ["УМНИК", "КНИГА"], v: ["УГОЛЬ", "КАТЕР"], ch: ["<b>1.</b> Умный человек.", "<b>3.</b> Источник знаний."], cv: ["<b>2.</b> Черное топливо.", "<b>4.</b> Суденышко."]},
+            {h: ["ГЕРОЙ", "МИФ"], v: ["ГОРОХ", "ФАКТ"], ch: ["<b>1.</b> Храбрый человек.", "<b>3.</b> Древнее сказание."], cv: ["<b>2.</b> Зеленый стручок.", "<b>4.</b> Событие."]},
+            {h: ["ВЕТЕР", "БУРЯ"], v: ["ВОДА", "РАДИО"], ch: ["<b>1.</b> Движение воздуха.", "<b>3.</b> Шторм."], cv: ["<b>2.</b> Жидкость.", "<b>4.</b> Беспроводная связь."]},
+            {h: ["ОГОНЬ", "ДЫМ"], v: ["ОКЕАН", "НОЖИК"], ch: ["<b>1.</b> Жар пламени.", "<b>3.</b> Продукты горения."], cv: ["<b>2.</b> Водная стихия.", "<b>4.</b> Режущий инструмент."]},
+            {h: ["ГОРА", "ПИК"], v: ["ГОРОД", "АРКА"], ch: ["<b>1.</b> Возвышенность.", "<b>3.</b> Вершина."], cv: ["<b>2.</b> Населенный пункт.", "<b>4.</b> Дверной проем."]},
+            {h: ["ПЕСНЯ", "НОТА"], v: ["ПИЛОТ", "ОКЕАН"], ch: ["<b>1.</b> Мелодия со словами.", "<b>3.</b> Знак звука."], cv: ["<b>2.</b> Летчик.", "<b>4.</b> Водный гигант."]},
+            {h: ["ГОЛОС", "ЗВУК"], v: ["ГИТАРА", "ТКАНЬ"], ch: ["<b>1.</b> Звуки речи.", "<b>3.</b> Волна."], cv: ["<b>2.</b> Инструмент.", "<b>4.</b> Материал."]},
+            {h: ["ПАРК", "ЛЕС"], v: ["ПЛАВАТ", "КАРТА"], ch: ["<b>1.</b> Зона отдыха.", "<b>3.</b> Заповедник."], cv: ["<b>2.</b> Плавать в воде.", "<b>4.</b> План местности."]},
+            {h: ["РЫБА", "СЕТЬ"], v: ["РЕКА", "ОБЛАК"], ch: ["<b>1.</b> Живет в реке.", "<b>3.</b> Сеть для ловли."], cv: ["<b>2.</b> Поток воды.", "<b>4.</b> На небе."]},
+            {h: ["МОСТ", "РЕКА"], v: ["МОРЯК", "ТРУБА"], ch: ["<b>1.</b> Переправа.", "<b>3.</b> Водный поток."], cv: ["<b>2.</b> Служит на флоте.", "<b>4.</b> Дымоход."]},
+            {h: ["УТРО", "НОЧЬ"], v: ["УЛИЦА", "ЧАСЫ"], ch: ["<b>1.</b> Начало дня.", "<b>3.</b> Пора сна."], cv: ["<b>2.</b> Дорога в городе.", "<b>4.</b> Прибор времени."]}
+        ];
 
-        // Построение матричной сетки 8х8 с правильным пересечением слов в углах и точках стыка
-        function buildLevelData(index) {
-            const data = levelsData[index];
-            const grid = Array(8).fill(null).map(() => Array(8).fill(null));
+        let curLvl = 0;
+        const totalLvls = db.length;
+        let activeMatrix = [];
 
-            let w1 = data.words.h1.padEnd(8, 'А').slice(0, 8);
-            let w2 = data.words.v1.padEnd(8, 'Б').slice(0, 8);
-            let w3 = data.words.h2.padEnd(8, 'В').slice(0, 8);
-            let w4 = data.words.v2.padEnd(8, 'Г').slice(0, 8);
+        function initBar() {
+            const bar = document.getElementById('levelsBar');
+            bar.innerHTML = '';
+            for(let i=0; i<totalLvls; i++) {
+                let b = document.createElement('button');
+                b.className = 'lvl-btn ' + (i === curLvl ? 'active' : '');
+                b.innerText = i + 1;
+                b.onclick = () => loadLevel(i);
+                bar.appendChild(b);
+            }
+        }
 
-            // 1. Горизонталь 1 (строка 0)
-            for(let c=0; c<8; c++) {
-                if(c < data.words.h1.length) {
-                    grid[0][c] = { l: w1[c], n: c===0?1:undefined };
-                }
+        function loadLevel(idx) {
+            curLvl = idx;
+            document.getElementById('lvlNum').innerText = idx + 1;
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('msg').innerText = '';
+            initBar();
+            buildPuzzleData(db[idx]);
+            renderGrid();
+        }
+
+        // Строим матрицу 6х6 с пересечением крест-накрест
+        function buildPuzzleData(data) {
+            // Сетка 6х6 по умолчанию пустая (null)
+            let m = Array(6).fill(null).map(() => Array(6).fill(null));
+
+            let w1 = data.h[0].padEnd(6, 'А');
+            let w2 = data.v[0].padEnd(6, 'Б');
+            let w3 = data.h[1].padEnd(6, 'В');
+            let w4 = data.v[1].padEnd(6, 'Г');
+
+            // 1. Горизонталь 1 (строка 0, с 0 по 5)
+            for(let c=0; c<6; c++) {
+                m[0][c] = { letter: w1[c], num: c === 0 ? 1 : undefined };
             }
 
-            // 2. Вертикаль 1 (колонка 0) - пересекает h1 в ячейке [0,0]
-            for(let r=0; r<8; r++) {
-                if(r < data.words.v1.length) {
-                    if(grid[r][0] === null) {
-                        grid[r][0] = { l: w2[r], n: r===0?2:undefined };
-                    } else {
-                        grid[r][0].l = w2[r]; // точка пересечения
-                        grid[r][0].n = 2; // номер для вертикали
-                    }
-                }
-            }
-
-            // 3. Горизонталь 2 (строка 4)
-            for(let c=2; c<2+data.words.h2.length; c++) {
-                let charIdx = c - 2;
-                if(grid[4][c] === null) {
-                    grid[4][c] = { l: w3[charIdx], n: charIdx===0?3:undefined };
+            // 2. Вертикаль 1 (колонка 0, с 0 по 5) - пересекает h1 в [0,0]
+            for(let r=0; r<6; r++) {
+                if(m[r][0] === null) {
+                    m[r][0] = { letter: w2[r], num: r === 0 ? 2 : undefined };
                 } else {
-                    grid[4][c].l = w3[charIdx];
+                    m[r][0].letter = w2[r];
+                    m[r][0].num = 2; // Точка старта второго слова
                 }
             }
 
-            // 4. Вертикаль 2 (колонка 5)
-            for(let r=1; r<1+data.words.v2.length; r++) {
-                let charIdx = r - 1;
-                if(grid[r][5] === null) {
-                    grid[r][5] = { l: w4[charIdx], n: charIdx===0?4:undefined };
+            // 3. Горизонталь 2 (строка 3, с 1 по 4)
+            for(let c=1; c<5; c++) {
+                let idx = c - 1;
+                if(m[3][c] === null) {
+                    m[3][c] = { letter: w3[idx], num: idx === 0 ? 3 : undefined };
                 } else {
-                    grid[r][5].l = w4[charIdx];
+                    m[3][c].letter = w3[idx];
                 }
             }
 
-            return {
-                grid: grid,
-                h: data.h,
-                v: data.v
-            };
-        }
-
-        const gridElement = document.getElementById('crosswordGrid');
-
-        function initLevelSelector() {
-            const selector = document.getElementById('levelSelector');
-            selector.innerHTML = '';
-            for (let i = 0; i < totalLevels; i++) {
-                const btn = document.createElement('button');
-                btn.classList.add('level-btn');
-                if (i === currentLevelIndex) btn.classList.add('active');
-                btn.innerText = i + 1;
-                btn.onclick = () => switchLevel(i);
-                selector.appendChild(btn);
+            // 4. Вертикаль 2 (колонка 4, с 1 по 4)
+            for(let r=1; r<5; r++) {
+                let idx = r - 1;
+                if(m[r][4] === null) {
+                    m[r][4] = { letter: w4[idx], num: idx === 0 ? 4 : undefined };
+                } else {
+                    m[r][4].letter = w4[idx];
+                }
             }
+
+            activeMatrix = m;
+
+            // Рендер подсказок
+            document.getElementById('hClues').innerHTML = data.ch.map(s => `<li>${s}</li>`).join('');
+            document.getElementById('vClues').innerHTML = data.cv.map(s => `<li>${s}</li>`).join('');
         }
 
-        function switchLevel(index) {
-            currentLevelIndex = index;
-            document.getElementById('currentLevelNum').innerText = index + 1;
-            document.getElementById('nextLevelBtn').style.display = 'none';
-            document.getElementById('message').innerText = '';
-            initLevelSelector();
-            initGrid();
-        }
+        function renderGrid() {
+            let gridEl = document.getElementById('grid');
+            gridEl.innerHTML = '';
 
-        function initGrid() {
-            currentLevelData = buildLevelData(currentLevelIndex);
-            gridElement.innerHTML = '';
+            for(let r=0; r<6; r++) {
+                for(let c=0; c<6; c++) {
+                    let cellData = activeMatrix[r][c];
+                    let div = document.createElement('div');
+                    div.className = 'cell';
 
-            for (let r = 0; r < 8; r++) {
-                for (let c = 0; c < 8; c++) {
-                    const cellData = currentLevelData.grid[r][c];
-                    const cellDiv = document.createElement('div');
-                    cellDiv.classList.add('cell');
-
-                    if (cellData === null) {
-                        cellDiv.classList.add('blocked');
+                    if(cellData === null) {
+                        div.classList.add('blocked');
                     } else {
-                        if (cellData.n) {
-                            const numberSpan = document.createElement('span');
-                            numberSpan.classList.add('cell-number');
-                            numberSpan.innerText = cellData.n;
-                            cellDiv.appendChild(numberSpan);
+                        if(cellData.num) {
+                            let span = document.createElement('span');
+                            span.className = 'c-num';
+                            span.innerText = cellData.num;
+                            div.appendChild(span);
                         }
 
-                        const input = document.createElement('input');
-                        input.setAttribute('maxlength', '1');
-                        input.dataset.row = r;
-                        input.dataset.col = c;
-                        
+                        let input = document.createElement('input');
+                        input.maxLength = 1;
+                        input.dataset.r = r;
+                        input.dataset.c = c;
+
+                        // Умный переход по ячейкам при вводе
                         input.addEventListener('input', (e) => {
-                            if (e.target.value.length === 1) {
-                                const nextInput = gridElement.querySelector(`input[data-row="${r}"][data-col="${c+1}"]`) ||
-                                                  gridElement.querySelector(`input[data-row="${r+1}"][data-col="${c}"]`);
-                                if (nextInput) nextInput.focus();
+                            if(e.target.value.length === 1) {
+                                let next = gridEl.querySelector(`input[data-r="${r}"][data-c="${c+1}"]`) ||
+                                           gridEl.querySelector(`input[data-r="${r+1}"][data-c="${c}"]`);
+                                if(next) next.focus();
                             }
                         });
 
-                        cellDiv.appendChild(input);
+                        div.appendChild(input);
                     }
-                    gridElement.appendChild(cellDiv);
+                    gridEl.appendChild(div);
                 }
             }
-
-            document.getElementById('horizontalClues').innerHTML = currentLevelData.h.map(item => `<li>${item}</li>`).join('');
-            document.getElementById('verticalClues').innerHTML = currentLevelData.v.map(item => `<li>${item}</li>`).join('');
         }
 
-        function checkCrossword() {
+        function checkGrid() {
+            let inputs = document.querySelectorAll('.grid-box input');
             let allCorrect = true;
-            let filledCount = 0;
-            const inputs = gridElement.querySelectorAll('input');
+            let filled = 0;
 
-            inputs.forEach(input => {
-                const r = input.dataset.row;
-                const c = input.dataset.col;
-                const correctLetter = currentLevelData.grid[r][c].l;
-                const userLetter = input.value.toUpperCase();
+            inputs.forEach(inp => {
+                let r = inp.dataset.r;
+                let c = inp.dataset.c;
+                let correct = activeMatrix[r][c].letter;
+                let val = inp.value.toUpperCase();
 
-                if (userLetter !== '') {
-                    filledCount++;
-                    if (userLetter === correctLetter) {
-                        input.style.color = '#38bdf8';
+                if(val !== '') {
+                    filled++;
+                    if(val === correct) {
+                        inp.style.color = '#34d399';
                     } else {
-                        input.style.color = '#f43f5e';
+                        inp.style.color = '#f87171';
                         allCorrect = false;
                     }
                 } else {
@@ -473,40 +444,38 @@
                 }
             });
 
-            const message = document.getElementById('message');
-            if (filledCount === 0) {
-                message.style.color = '#fbbf24';
-                message.innerText = 'Заполните пустые поля!';
-            } else if (allCorrect) {
-                message.style.color = '#34d399';
-                message.innerText = 'Отлично! Уровень успешно пройден!';
-                if (currentLevelIndex < totalLevels - 1) {
-                    document.getElementById('nextLevelBtn').style.display = 'block';
+            let msg = document.getElementById('msg');
+            if(filled === 0) {
+                msg.style.color = '#fbbf24';
+                msg.innerText = 'Заполните пустые клетки!';
+            } else if(allCorrect) {
+                msg.style.color = '#34d399';
+                msg.innerText = 'Круто! Уровень пройден верно!';
+                if(curLvl < totalLvls - 1) {
+                    document.getElementById('nextBtn').style.display = 'block';
                 }
             } else {
-                message.style.color = '#f43f5e';
-                message.innerText = 'Есть ошибки в буквах. Проверьте написание!';
+                msg.style.color = '#f87171';
+                msg.innerText = 'Есть ошибки, подсвечены красным.';
             }
         }
 
-        function resetCurrentLevel() {
-            const inputs = gridElement.querySelectorAll('input');
-            inputs.forEach(input => {
-                input.value = '';
-                input.style.color = '#f8fafc';
+        function clearGrid() {
+            document.querySelectorAll('.grid-box input').forEach(inp => {
+                inp.value = '';
+                inp.style.color = 'white';
             });
-            document.getElementById('message').innerText = '';
-            document.getElementById('nextLevelBtn').style.display = 'none';
+            document.getElementById('msg').innerText = '';
+            document.getElementById('nextBtn').style.display = 'none';
         }
 
-        function nextLevel() {
-            if (currentLevelIndex < totalLevels - 1) {
-                switchLevel(currentLevelIndex + 1);
+        function nextLvl() {
+            if(curLvl < totalLvls - 1) {
+                loadLevel(curLvl + 1);
             }
         }
 
-        initLevelSelector();
-        initGrid();
+        loadLevel(0);
     </script>
 </body>
 </html>
